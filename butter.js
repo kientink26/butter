@@ -1,5 +1,5 @@
 const http = require("http");
-const fs = require("fs/promises");
+const fs = require("fs");
 
 class Butter {
   constructor() {
@@ -8,14 +8,10 @@ class Butter {
     this.middlewares = [];
 
     this.server.on("request", (req, res) => {
-      res.sendFile = async (path, mime) => {
-        const fd = await fs.open(path, "r");
-        const stream = fd.createReadStream();
+      res.sendFile = (path, mime) => {
+        const stream = fs.createReadStream(path);
         res.setHeader("Content-Type", mime);
         stream.pipe(res);
-        stream.on("end", () => {
-          fd?.close();
-        });
       };
 
       res.status = (code) => {
